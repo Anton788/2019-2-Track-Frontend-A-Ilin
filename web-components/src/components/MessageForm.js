@@ -36,11 +36,11 @@ template.innerHTML = `
 
 
 window.onload = function reload() {
-  const loaded = sessionStorage.getItem('loaded');
+  const loaded = localStorage.getItem('loaded');
   if (loaded) {
-    sessionStorage.getItem('loaded');
+    localStorage.getItem('loaded');
   } else {
-    sessionStorage.setItem('loaded', true);
+    localStorage.setItem('loaded', true);
   }
 };
 
@@ -56,7 +56,7 @@ class MessageForm extends HTMLElement {
     this.$form.addEventListener('submit', this.onSubmit.bind(this));
     this.$form.addEventListener('keypress', this.onKeyPress.bind(this));
     this.appState = { chat: [{ id: 1, messages: [] }] };
-    if (!sessionStorage.getItem('loaded')) {
+    if (!localStorage.getItem('loaded')) {
       localStorage.clear();
       localStorage.setItem('appState', JSON.stringify({ chat: [{ id: 1, messages: [] }] }));
     } else {
