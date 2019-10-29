@@ -55,20 +55,21 @@ class MessageForm extends HTMLElement {
     this.$chat_window = this.shadowRoot.querySelector('.table');
     this.$form.addEventListener('submit', this.onSubmit.bind(this));
     this.$form.addEventListener('keypress', this.onKeyPress.bind(this));
+    this.appState = { chat: [{ id: 1, messages: [] }] };
     if (!sessionStorage.getItem('loaded')) {
       localStorage.clear();
-      localStorage.setItem('count', this.count);
+      localStorage.setItem('appState', JSON.stringify({ chat: [{ id: 1, messages: [] }] }));
     } else {
-      this.count = Number.parseInt(localStorage.getItem('count'), 10);
-      for (let i = 1; i <= this.count; i += 1) {
-        const json = localStorage.getItem(String(i));
-        const message = document.createElement('our-message');
-        const mesInfo = JSON.parse(json);
-        message.setText(mesInfo.text);
-        message.setTime(mesInfo.data);
-        this.$chat_window.appendChild(message);
-        this.$chat_window.scrollTop = this.$chat_window.scrollHeight;
-        this.$input.$input.value = '';
+      this.appState = JSON.parse(localStorage.getItem('appState'));
+      if (this.appState.chat[0].messages.length !== 0) {
+        for (let i = 0; i < this.appState.chat[0].messages.length; i += 1) {
+          const message = document.createElement('our-message');
+          message.setText(this.appState.chat[0].messages[i].text);
+          message.setTime(this.appState.chat[0].messages[i].data);
+          this.$chat_window.appendChild(message);
+          this.$chat_window.scrollTop = this.$chat_window.scrollHeight;
+          this.$input.$input.value = '';
+        }
       }
     }
   }
@@ -90,10 +91,10 @@ class MessageForm extends HTMLElement {
       const messInfo = {
         text: this.$input.value,
         data: time,
+        name: 'me',
       };
-      localStorage.setItem(this.count, JSON.stringify(messInfo));
-      localStorage.removeItem('count');
-      localStorage.setItem('count', this.count);
+      this.appState.chat[0].messages.push(messInfo);
+      localStorage.setItem('appState', JSON.stringify(this.appState));
       this.$chat_window.appendChild(message);
       this.$chat_window.scrollTop = this.$chat_window.scrollHeight;
       this.$input.$input.value = '';
